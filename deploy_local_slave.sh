@@ -48,8 +48,22 @@ ln -sf "/etc/bind/named.slave.conf" "/etc/bind/named.conf";
 echo "Creating cat-zones directory...";
 mkdir /etc/bind/cat-zones/
 
-# echo "Removing Catalog-Zones configuration...";
-# sed -i -e '1h;2,$H;$!d;g' -e 's/catalog-zones {[^}]*};[^}]*};[^}]*};//g' /etc/bind/named.slave.conf
+TESTCONF=`mktemp`
+echo 'options { catalog-zones { }; };' >> ${TESTCONF}
+named-checkconf ${TESTCONF};
+if [ "${?}" -eq 1 ]; then
+	OLDVERSION="1"
+fi;
+rm ${TESTCONF}
+
+if [ "${OLDVERSION}" == "1" ]; then
+	apt-get -y install inotify-tools
+	echo "Removing Catalog-Zones configuration...";
+	sed -i -e '1h;2,$H;$!d;g' -e 's/catalog-zones {[^}]*};[^}]*};[^}]*};//g' /etc/bind/named.slave.conf
+
+	echo "Installing fakeCatalog.sh";
+	ln -s /etc/bind/fakeCatalog.service /etc/systemd/system/fakeCatalog.service
+fi;
 
 echo "Fixing ownership";
 chown -Rf bind:bind /etc/bind

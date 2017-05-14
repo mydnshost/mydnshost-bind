@@ -1,0 +1,12 @@
+[Unit]
+Description=Fake Catalog Zone
+After=network.target
+
+[Service]
+WorkingDirectory=/etc/bind
+ExecStart=/etc/bind/fakeCatalog.sh
+Restart=always
+User=shane
+
+[Install]
+WantedBy=multi-user.target
