@@ -6,7 +6,7 @@ After=network.target
 WorkingDirectory=/etc/bind
 ExecStart=/etc/bind/fakeCatalog.sh
 Restart=always
-User=shane
+User=bind
 
 [Install]
 WantedBy=multi-user.target

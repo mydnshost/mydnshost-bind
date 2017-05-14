@@ -62,7 +62,7 @@ if [ "${OLDVERSION}" == "1" ]; then
 	sed -i -e '1h;2,$H;$!d;g' -e 's/catalog-zones {[^}]*};[^}]*};[^}]*};//g' /etc/bind/named.slave.conf
 
 	echo "Installing fakeCatalog.sh";
-	ln -s /etc/bind/fakeCatalog.service /etc/systemd/system/fakeCatalog.service
+	ln -sf /etc/bind/fakeCatalog.service /etc/systemd/system/fakeCatalog.service
 fi;
 
 echo "Fixing ownership";
