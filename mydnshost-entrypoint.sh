@@ -8,15 +8,16 @@ if [ "$1" == "" ]; then
 	if [ "${RUNMODE}" == "SLAVE" ]; then
 		exec named -c /etc/bind/named.slave.conf -g
 	elif [ "${RUNMODE}" == "MASTER" ]; then
-		ZONEFILE="/etc/bind/named.local.zones"
-		echo "" > "${ZONEFILE}"
+
+		# Rebuild _default.nzf
+		ZONEFILE="/etc/bind/_default.nzf"
+
+		echo "# New zone file for view: _default" > "${ZONEFILE}"
+		echo "# This file contains configuration for zones added by" > "${ZONEFILE}"
+		echo "# the 'rndc addzone' command. DO NOT EDIT BY HAND." > "${ZONEFILE}"
 
 		cat /bind/catalog.db | egrep "IN[[:space:]]+PTR" | awk '{print $4}' | while read ZONE; do
-			echo 'zone "'${ZONE}'" {' >> ${ZONEFILE}
-			echo '	type master;' >> ${ZONEFILE}
-			echo '	file "/bind/zones/'${ZONE}'.db";' >> ${ZONEFILE}
-			echo '};' >> ${ZONEFILE}
-			echo '' >> ${ZONEFILE}
+			echo 'zone "'${ZONE}'" { type master; file "/bind/zones/'${ZONE}'.db"; };' >> ${ZONEFILE}
 		done;
 
 		exec named -c /etc/bind/named.master.conf -g
