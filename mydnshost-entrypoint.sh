@@ -17,7 +17,7 @@ if [ "$1" == "" ]; then
 			echo '	file "/bind/zones/'${ZONE}'.db";' >> ${ZONEFILE}
 			echo '};' >> ${ZONEFILE}
 			echo '' >> ${ZONEFILE}
-		fi;
+		done;
 
 		exec named -c /etc/bind/named.master.conf -g
 	fi;
