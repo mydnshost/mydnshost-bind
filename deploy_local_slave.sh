@@ -63,6 +63,7 @@ if [ "${OLDVERSION}" = "1" ]; then
 
 	echo "Installing fakeCatalog.sh";
 	ln -sf /etc/bind/fakeCatalog.service /etc/systemd/system/fakeCatalog.service
+	systemctl daemon-reload
 fi;
 
 echo "Fixing ownership";
@@ -73,5 +74,6 @@ service bind9 stop
 service bind9 start
 
 if [ "${OLDVERSION}" = "1" ]; then
+	service fakeCatalog stop
 	service fakeCatalog start
 fi;
