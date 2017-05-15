@@ -56,7 +56,7 @@ if [ "${?}" -eq 1 ]; then
 fi;
 rm ${TESTCONF}
 
-if [ "${OLDVERSION}" == "1" ]; then
+if [ "${OLDVERSION}" = "1" ]; then
 	apt-get -y install inotify-tools
 	echo "Removing Catalog-Zones configuration...";
 	sed -i -e '1h;2,$H;$!d;g' -e 's/catalog-zones {[^}]*};[^}]*};[^}]*};//g' /etc/bind/named.slave.conf
