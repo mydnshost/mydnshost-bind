@@ -5,7 +5,7 @@
 #                                                                              #
 # This requires that bind9 from apt is at least 9.11 or later.     	           #
 ################################################################################
-# apt-get update && apt-get -y install git && git clone https://github.com/shanemcc/mydnshost-bind && cd mydnshost-bind && sh deploy_local_slave.sh
+# apt-get update && apt-get -y install git && git clone https://github.com/shanemcc/mydnshost-bind && cd mydnshost-bind && ./deploy_local_slave.sh
 ################################################################################
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -71,3 +71,7 @@ chown -Rf bind:bind /etc/bind
 echo "Restarting bind."
 service bind9 stop
 service bind9 start
+
+if [ "${OLDVERSION}" = "1" ]; then
+	service fakeCatalog start
+fi;
