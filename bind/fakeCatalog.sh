@@ -34,7 +34,7 @@ while true; do
 	fi;
 
 	inotifywait --timeout 86400 "${CATZONE}"
-	sleep 60
+	sleep 5
 done
 
 
