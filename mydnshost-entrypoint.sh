@@ -17,7 +17,7 @@ if [ "$1" == "" ]; then
 		echo "# the 'rndc addzone' command. DO NOT EDIT BY HAND." >> "${ZONEFILE}"
 
 		cat /bind/catalog.db | egrep "IN[[:space:]]+PTR" | awk -F" PTR " '{print $2}' | sed 's/.$//' | while read ZONE; do
-			echo 'zone "'${ZONE}'" { type master; file "/bind/zones/'${ZONE}'.db"; };' >> ${ZONEFILE}
+			echo 'zone "'${ZONE}'" { type master; also-notify { 87.117.249.16; 87.237.61.16; 66.118.190.141; }; file "/bind/zones/'${ZONE}'.db"; };' >> ${ZONEFILE}
 		done;
 
 		exec named -c /etc/bind/named.master.conf -g
