@@ -1,9 +1,9 @@
 #!/bin/bash
 ################################################################################
-# This script will handle the automatic setup of a slave nameserver	locally    #
+# This script will handle the automatic setup of a slave nameserver locally    #
 # rather than via docker.                                                      #
 #                                                                              #
-# This requires that bind9 from apt is at least 9.11 or later.     	           #
+# This requires that bind9 from apt is at least 9.11 or later.                 #
 ################################################################################
 # apt-get update && apt-get -y install git && git clone https://github.com/shanemcc/mydnshost-bind && cd mydnshost-bind && ./deploy_local_slave.sh
 ################################################################################
