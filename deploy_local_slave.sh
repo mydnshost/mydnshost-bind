@@ -62,7 +62,7 @@ if [ "${OLDVERSION}" = "1" ]; then
 	sed -i -e '1h;2,$H;$!d;g' -e 's/catalog-zones {[^}]*};[^}]*};[^}]*};//g' /etc/bind/named.slave.conf
 
 	echo "Installing fakeCatalog.sh";
-	ln -sf /etc/bind/fakeCatalog.service /etc/systemd/system/fakeCatalog.service
+	systemctl enable /etc/bind/fakeCatalog.service
 	systemctl daemon-reload
 fi;
 
