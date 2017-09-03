@@ -3,7 +3,7 @@
 CATZONE="/etc/bind/catalog.db"
 CATNAME="catalog.invalid"
 MASTER="87.117.249.17"
-MONITOR_SCRIPT="/root/fakeCatalog_monitor.sh"
+MONITOR_SCRIPT="/etc/bind/fakeCatalog_monitor.sh"
 
 while true; do
 	if [ -e "${CATZONE}" ]; then
