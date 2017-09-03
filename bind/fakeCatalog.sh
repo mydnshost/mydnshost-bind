@@ -34,11 +34,11 @@ while true; do
 		touch "${CATZONE}"
 	fi;
 
-	inotifywait --timeout 86400 "${CATZONE}"
-
 	if [ -e "${MONITOR_SCRIPT}" ]; then
 		/bin/sh "${MONITOR_SCRIPT}"
 	fi;
+
+	inotifywait --timeout 86400 "${CATZONE}"
 
 	sleep 5
 done
