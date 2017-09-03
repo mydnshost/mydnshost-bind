@@ -3,6 +3,7 @@
 CATZONE="/etc/bind/catalog.db"
 CATNAME="catalog.invalid"
 MASTER="87.117.249.17"
+MONITOR_SCRIPT="/root/fakeCatalog_monitor.sh"
 
 while true; do
 	if [ -e "${CATZONE}" ]; then
@@ -34,6 +35,11 @@ while true; do
 	fi;
 
 	inotifywait --timeout 86400 "${CATZONE}"
+
+	if [ -e "${MONITOR_SCRIPT}" ]; then
+		/bin/sh "${MONITOR_SCRIPT}"
+	fi;
+
 	sleep 5
 done
 
