@@ -58,7 +58,7 @@ sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.conf"
 sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.conf"
 
 echo 'MASTER="'"${MASTER}"'"' > "/etc/bind/server_settings.conf"
-echo 'SLAVES="'"${SLAVES}"'"' > "/etc/bind/server_settings.conf"
+echo 'SLAVES="'"${SLAVES}"'"' >> "/etc/bind/server_settings.conf"
 
 echo "Creating cat-zones directory...";
 mkdir /etc/bind/cat-zones/

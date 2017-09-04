@@ -20,7 +20,7 @@ fi;
 MASTER="";
 SLAVES="";
 
-if [ -e "/etc/bind/server_settings.conf" ]
+if [ -e "/etc/bind/server_settings.conf" ]; then
 	source "/etc/bind/server_settings.conf"
 fi;
 
