@@ -3,9 +3,22 @@
 set -xe
 
 if [ "$1" == "" ]; then
+	if [ "${MASTER}" = "" -o "${SLAVES}" = "" ]; then
+		echo "MASTER and SLAVES environmemt variables must be set."
+		echo ""
+		echo "Example:"
+		echo 'MASTER="1.1.1.1;"'
+		echo 'SLAVES="2.2.2.2; 3.3.3.3; 4.4.4.4;"'
+		exit 1;
+	fi;
+
 	echo "Starting BIND: ${RUNMODE}"
 
 	if [ "${RUNMODE}" == "SLAVE" ]; then
+		cp "/etc/bind/named.slave.conf.template" "/etc/bind/named.slave.conf";
+		sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.slave.conf"
+		sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.slave.conf"
+
 		exec named -c /etc/bind/named.slave.conf -g
 	elif [ "${RUNMODE}" == "MASTER" ]; then
 
@@ -29,6 +42,10 @@ if [ "$1" == "" ]; then
 				echo 'zone "'${ZONE}'" { type master; file "/bind/zones/'${ZONE}'.db"; allow-transfer { '${ALLOWED_TRANSFER}' }; };' >> ${ZONEFILE}
 			fi;
 		done;
+
+		cp "/etc/bind/named.master.conf.template" "/etc/bind/named.master.conf";
+		sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.master.conf"
+		sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.master.conf"
 
 		exec named -c /etc/bind/named.master.conf -g
 	fi;

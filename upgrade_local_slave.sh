@@ -1,9 +1,9 @@
 #!/bin/bash
 ################################################################################
-# This script will handle the automatic setup of a slave nameserver locally    #
+# This script will handle the automatic upgrade of a slave nameserver locally  #
 # rather than via docker.                                                      #
 #                                                                              #
-# This requires that bind9 from apt is at least 9.11 or later.                 #
+# This requires that deploy_local_slave.sh has been run in the past.           #
 ################################################################################
 # apt-get update && apt-get -y install git && git clone https://github.com/shanemcc/mydnshost-bind && cd mydnshost-bind && ./deploy_local_slave.sh
 ################################################################################
@@ -17,51 +17,30 @@ if [ "${USER}" != "root" ]; then
 	exit 1;
 fi;
 
+MASTER="";
+SLAVES="";
+
+if [ -e "/etc/bind/server_settings.conf" ]
+	source "/etc/bind/server_settings.conf"
+fi;
+
 if [ "${MASTER}" = "" -o "${SLAVES}" = "" ]; then
-	echo "You must specify MASTER and SLAVES environment variables before running this."
+	echo "MASTER and SLAVES settings must be defined in /etc/bind/server_settings.conf before running this."
 	echo ""
 	echo "Example:"
-	echo 'export MASTER="1.1.1.1;"'
-	echo 'export SLAVES="2.2.2.2; 3.3.3.3; 4.4.4.4;"'
-	echo "${0}"
+	echo 'MASTER="1.1.1.1;"'
+	echo 'SLAVES="2.2.2.2; 3.3.3.3; 4.4.4.4;"'
 	exit 1;
 fi;
 
-echo "Setting up slave server."
-echo ""
+echo "Upgrading up slave server."
 
-HASBIND=`dpkg --get-selections | egrep "^bind9[[:space:]]"`
-if [ "${HASBIND}" = "" ]; then
-	echo "Installing bind...";
-	apt-get -y install bind9 bind9utils
-	update-rc.d bind9 enable
-fi;
-
-echo "Removing old bind config...";
-rm -Rfv "/etc/bind/"*;
-
-echo "Adding new bind config...";
-TEMPDIR=`mktemp -d`
-git clone https://github.com/nguoianphu/docker-dns ${TEMPDIR}
-
-cp -Rfv "${TEMPDIR}/bind/"* "/etc/bind/";
 cp -Rfv "${DIR}/bind/"* "/etc/bind/";
-rm -Rf "${TEMPDIR}"
-
-mkdir -p /etc/bind/dynamic
-mkdir -p /etc/bind/data
-touch /etc/bind/data/named.run
 
 rm -Rfv "/etc/bind/named.conf";
 cp "/etc/bind/named.slave.conf.template" "/etc/bind/named.conf";
 sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.conf"
 sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.conf"
-
-echo 'MASTER="'"${MASTER}"'"' > "/etc/bind/server_settings.conf"
-echo 'SLAVES="'"${SLAVES}"'"' > "/etc/bind/server_settings.conf"
-
-echo "Creating cat-zones directory...";
-mkdir /etc/bind/cat-zones/
 
 TESTCONF=`mktemp`
 echo 'options { catalog-zones { }; };' >> ${TESTCONF}
@@ -72,7 +51,6 @@ fi;
 rm ${TESTCONF}
 
 if [ "${OLDVERSION}" = "1" ]; then
-	apt-get -y install inotify-tools
 	echo "Removing Catalog-Zones configuration...";
 	sed -i -e '1h;2,$H;$!d;g' -e 's/catalog-zones {[^}]*};[^}]*};[^}]*};//g' /etc/bind/named.conf
 
@@ -84,11 +62,9 @@ fi;
 echo "Fixing ownership";
 chown -Rf bind:bind /etc/bind
 
-echo "Restarting bind."
-service bind9 stop
-service bind9 start
+echo "Reloading bind."
+service bind9 reload
 
 if [ "${OLDVERSION}" = "1" ]; then
-	service fakeCatalog stop
-	service fakeCatalog start
+	service fakeCatalog restart
 fi;

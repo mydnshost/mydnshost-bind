@@ -1,11 +1,11 @@
 //
-// named.master.conf
+// named.slave.conf
 //
 
 include "/etc/bind/rndc.controls.conf";
 
 statistics-channels {
-	inet 0.0.0.0 port 8080;
+	inet 0.0.0.0 port 8080 allow { %%MASTER%% };
 };
 
 options {
@@ -20,8 +20,7 @@ options {
 	allow-recursion { none; };
 	recursion no;
 
-	allow-transfer { 87.117.249.16; 87.237.61.16; 66.118.190.141; };
-	also-notify { 87.117.249.16; 87.237.61.16; 66.118.190.141; };
+	allow-transfer { none; };
 
 	dnssec-validation auto;
 
@@ -29,6 +28,15 @@ options {
 	session-keyfile "/run/named/session.key";
 
 	allow-new-zones yes;
+
+	catalog-zones {
+		zone "catalog.invalid." {
+			zone-directory "cat-zones"
+			in-memory no
+			default-masters { %%MASTER%% };
+		};
+	};
+
 };
 
 logging {
@@ -47,9 +55,7 @@ include "/etc/bind/named.local.zones";
 include "/etc/bind/named.root.key";
 
 zone "catalog.invalid" {
-	type master;
-	file "/bind/catalog.db";
-
-	also-notify { 87.117.249.16; 87.237.61.16; 66.118.190.141; };
-	notify explicit;
+	type slave;
+	file "/etc/bind/catalog.db";
+	masters { %%MASTER%% };
 };

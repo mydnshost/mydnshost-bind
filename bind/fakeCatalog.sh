@@ -2,8 +2,14 @@
 
 CATZONE="/etc/bind/catalog.db"
 CATNAME="catalog.invalid"
-MASTER="87.117.249.17"
 MONITOR_SCRIPT="/etc/bind/fakeCatalog_monitor.sh"
+
+MASTER="";
+SLAVES="";
+
+if [ -e "/etc/bind/server_settings.conf" ]
+	source "/etc/bind/server_settings.conf"
+fi;
 
 while true; do
 	if [ -e "${CATZONE}" ]; then
@@ -13,7 +19,7 @@ while true; do
 		cat "${TEMPFILE}" | while read ZONE; do
 			if [ ! -e "/etc/bind/cat-zones/${ZONE}.db" ]; then
 				echo "Adding new zone: ${ZONE}"
-				rndc addzone "${ZONE}" '{ type slave; notify no; masters { '"${MASTER}"'; }; file "/etc/bind/cat-zones/'"${ZONE}"'.db"; };'
+				rndc addzone "${ZONE}" '{ type slave; notify no; masters { '"${MASTER}"' }; file "/etc/bind/cat-zones/'"${ZONE}"'.db"; };'
 				touch "/etc/bind/cat-zones/${ZONE}.db"
 			fi;
 		done;
