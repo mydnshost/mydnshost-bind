@@ -31,20 +31,7 @@ options {
 	allow-new-zones yes;
 };
 
-logging {
-	channel default_debug {
-		file "data/named.run";
-		severity dynamic;
-	};
-};
-
-zone "." IN {
-	type hint;
-	file "named.ca";
-};
-
 include "/etc/bind/named.local.zones";
-include "/etc/bind/named.root.key";
 
 zone "catalog.invalid" {
 	type master;

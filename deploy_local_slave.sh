@@ -41,12 +41,8 @@ echo "Removing old bind config...";
 rm -Rfv "/etc/bind/"*;
 
 echo "Adding new bind config...";
-TEMPDIR=`mktemp -d`
-git clone https://github.com/nguoianphu/docker-dns ${TEMPDIR}
 
-cp -Rfv "${TEMPDIR}/bind/"* "/etc/bind/";
 cp -Rfv "${DIR}/bind/"* "/etc/bind/";
-rm -Rf "${TEMPDIR}"
 
 mkdir -p /etc/bind/dynamic
 mkdir -p /etc/bind/data

@@ -55,5 +55,7 @@ if [ "$1" == "" ]; then
 		sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.master.conf"
 
 		exec named -c /etc/bind/named.master.conf -g
+	else
+		echo "Unknown RUNMODE."
 	fi;
 fi
