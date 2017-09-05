@@ -12,6 +12,13 @@ if [ "$1" == "" ]; then
 		exit 1;
 	fi;
 
+	if [ "${RNDCKEY}" = "" ]; then
+		echo "Generating RNDC Key..."
+
+		RNDCKEY=$(rndc-confgen -A hmac-md5 | grep -m1 secret | awk -F\" '{print $2}')
+	fi;
+	echo 'key "rndc-key" { algorithm hmac-md5; secret "'"${RNDCKEY}"'"; };' > /etc/bind/rndc.key.conf
+
 	echo "Starting BIND: ${RUNMODE}"
 
 	if [ "${RUNMODE}" == "SLAVE" ]; then

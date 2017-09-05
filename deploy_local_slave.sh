@@ -57,11 +57,20 @@ cp "/etc/bind/named.slave.conf.template" "/etc/bind/named.conf";
 sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.conf"
 sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.conf"
 
+if [ "${RNDCKEY}" = "" ]; then
+	echo "Generating RNDC Key..."
+
+	RNDCKEY=$(rndc-confgen -A hmac-md5 | grep -m1 secret | awk -F\" '{print $2}')
+fi;
+
 echo 'MASTER="'"${MASTER}"'"' > "/etc/bind/server_settings.conf"
 echo 'SLAVES="'"${SLAVES}"'"' >> "/etc/bind/server_settings.conf"
+echo 'RNDCKEY="'"${RNDCKEY}"'"' >> "/etc/bind/server_settings.conf"
 
 echo "Creating cat-zones directory...";
 mkdir /etc/bind/cat-zones/
+
+echo 'key "rndc-key" { algorithm hmac-md5; secret "'"${RNDCKEY}"'"; };' > /etc/bind/rndc.key.conf
 
 TESTCONF=`mktemp`
 echo 'options { catalog-zones { }; };' >> ${TESTCONF}

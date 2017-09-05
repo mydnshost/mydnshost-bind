@@ -19,9 +19,18 @@ fi;
 
 MASTER="";
 SLAVES="";
+RNDCKEY="";
 
 if [ -e "/etc/bind/server_settings.conf" ]; then
 	source "/etc/bind/server_settings.conf"
+fi;
+
+if [ "${RNDCKEY}" = "" ]; then
+	echo "Generating RNDC Key..."
+
+	RNDCKEY=$(rndc-confgen -A hmac-md5 | grep -m1 secret | awk -F\" '{print $2}')
+	echo 'RNDCKEY="'"${RNDCKEY}"'"' >> "/etc/bind/server_settings.conf"
+	echo 'key "rndc-key" { algorithm hmac-md5; secret "'"${RNDCKEY}"'"; };' > /etc/bind/rndc.key.conf
 fi;
 
 if [ "${MASTER}" = "" -o "${SLAVES}" = "" ]; then
