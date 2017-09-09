@@ -16,6 +16,7 @@ options {
 	statistics-file "/etc/bind/data/named_stats.txt";
 	zone-statistics yes;
 	memstatistics-file "/etc/bind/data/named_mem_stats.txt";
+	managed-keys-directory "/etc/bind/data/";
 
 	allow-recursion { none; };
 	recursion no;
