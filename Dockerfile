@@ -14,6 +14,7 @@ COPY mydnshost-entrypoint.sh /
 
 RUN set -x \
     && mkdir /bind \
+    && mkdir /etc/bind/data \
     && chmod +x /mydnshost-entrypoint.sh
 
 ENTRYPOINT [ "/mydnshost-entrypoint.sh" ]
