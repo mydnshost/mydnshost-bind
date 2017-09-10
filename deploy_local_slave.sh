@@ -27,6 +27,10 @@ if [ "${MASTER}" = "" -o "${SLAVES}" = "" ]; then
 	exit 1;
 fi;
 
+if [ "${STATISTICS}" = "" ]; then
+	STATISTICS="${MASTER}";
+fi;
+
 echo "Setting up slave server."
 echo ""
 
@@ -52,6 +56,7 @@ rm -Rfv "/etc/bind/named.conf";
 cp "/etc/bind/named.slave.conf.template" "/etc/bind/named.conf";
 sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.conf"
 sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.conf"
+sed -i 's/%%STATISTICS%%/'"${STATISTICS}"'/g' "/etc/bind/named.conf"
 
 if [ "${RNDCKEY}" = "" ]; then
 	echo "Generating RNDC Key..."
@@ -61,6 +66,7 @@ fi;
 
 echo 'MASTER="'"${MASTER}"'"' > "/etc/bind/server_settings.conf"
 echo 'SLAVES="'"${SLAVES}"'"' >> "/etc/bind/server_settings.conf"
+echo 'STATISTICS="'"${STATISTICS}"'"' >> "/etc/bind/server_settings.conf"
 echo 'RNDCKEY="'"${RNDCKEY}"'"' >> "/etc/bind/server_settings.conf"
 
 echo "Creating cat-zones directory...";

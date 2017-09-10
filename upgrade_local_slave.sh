@@ -19,6 +19,7 @@ fi;
 
 MASTER="";
 SLAVES="";
+STATISTICS="";
 RNDCKEY="";
 
 if [ -e "/etc/bind/server_settings.conf" ]; then
@@ -34,6 +35,10 @@ if [ "${MASTER}" = "" -o "${SLAVES}" = "" ]; then
 	exit 1;
 fi;
 
+if [ "${STATISTICS}" = "" ]; then
+	STATISTICS="${MASTER}";
+fi;
+
 echo "Upgrading up slave server."
 
 cp -Rfv "${DIR}/bind/"* "/etc/bind/";
@@ -42,6 +47,7 @@ rm -Rfv "/etc/bind/named.conf";
 cp "/etc/bind/named.slave.conf.template" "/etc/bind/named.conf";
 sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.conf"
 sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.conf"
+sed -i 's/%%STATISTICS%%/'"${STATISTICS}"'/g' "/etc/bind/named.conf"
 
 if [ "${RNDCKEY}" = "" ]; then
 	echo "Generating RNDC Key..."

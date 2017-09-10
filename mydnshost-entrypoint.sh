@@ -12,6 +12,10 @@ if [ "$1" == "" ]; then
 		exit 1;
 	fi;
 
+	if [ "${STATISTICS}" = "" ]; then
+		STATISTICS="${MASTER}";
+	fi;
+
 	if [ "${RNDCKEY}" = "" ]; then
 		echo "Generating RNDC Key..."
 
@@ -25,6 +29,7 @@ if [ "$1" == "" ]; then
 		cp "/etc/bind/named.slave.conf.template" "/etc/bind/named.slave.conf";
 		sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.slave.conf"
 		sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.slave.conf"
+		sed -i 's/%%STATISTICS%%/'"${STATISTICS}"'/g' "/etc/bind/named.slave.conf"
 
 		exec named -c /etc/bind/named.slave.conf -g
 	elif [ "${RUNMODE}" == "MASTER" ]; then
@@ -53,6 +58,7 @@ if [ "$1" == "" ]; then
 		cp "/etc/bind/named.master.conf.template" "/etc/bind/named.master.conf";
 		sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.master.conf"
 		sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.master.conf"
+		sed -i 's/%%STATISTICS%%/'"${STATISTICS}"'/g' "/etc/bind/named.master.conf"
 
 		exec named -c /etc/bind/named.master.conf -g
 	else
