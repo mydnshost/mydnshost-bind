@@ -25,13 +25,16 @@ while true; do
 		done;
 
 		ls -1 /etc/bind/cat-zones/ | while read ZONE; do
+			EXT=${ZONE##*.}
 			ZONE=${ZONE%.*}
-			INCAT=`cat ${TEMPFILE} | grep "^${ZONE}$"`
+			if [ "${EXT}" = "db" -a -e "/etc/bind/cat-zones/${ZONE}.db" ]; then
+				INCAT=`cat ${TEMPFILE} | grep "^${ZONE}$"`
 
-			if [ "${INCAT}" = "" ]; then
-				echo "Removing zone: ${ZONE}"
-				rndc delzone "${ZONE}"
-				rm "/etc/bind/cat-zones/${ZONE}.db"
+				if [ "${INCAT}" = "" ]; then
+					echo "Removing zone: ${ZONE}"
+					rndc delzone "${ZONE}"
+					rm "/etc/bind/cat-zones/${ZONE}.db"
+				fi;
 			fi;
 		done;
 
