@@ -20,8 +20,6 @@ options {
 
 	dnssec-enable yes;
 	key-directory "/etc/bind/keys";
-	auto-dnssec maintain;
-	inline-signing yes;
 	dnssec-validation yes;
 	dnssec-lookaside auto;
 
