@@ -55,9 +55,6 @@ if [ "$1" == "" ]; then
 			fi;
 
 			echo ' };' >> ${ZONEFILE}
-
-
-			auto-dnssec maintain;
 		done;
 
 		cp "/etc/bind/named.master.conf.template" "/etc/bind/named.master.conf";
