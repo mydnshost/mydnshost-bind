@@ -31,8 +31,6 @@ options {
 	allow-transfer { %%SLAVES%% };
 	also-notify { %%SLAVES%% };
 
-	dnssec-validation auto;
-
 	pid-file "/run/named/named.pid";
 	session-keyfile "/run/named/session.key";
 
