@@ -18,6 +18,13 @@ options {
 	memstatistics-file "/etc/bind/data/named_mem_stats.txt";
 	managed-keys-directory "/etc/bind/data/";
 
+	dnssec-enable yes;
+	key-directory "/etc/bind/keys";
+	auto-dnssec maintain;
+	inline-signing yes;
+	dnssec-validation yes;
+	dnssec-lookaside auto;
+
 	allow-recursion { none; };
 	recursion no;
 
