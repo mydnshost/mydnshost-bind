@@ -98,6 +98,7 @@ chown -Rf bind:bind /etc/bind
 if [ -e "/etc/apparmor.d/local/usr.sbin.named" ]; then
 	echo "Fixing AppArmor";
 	echo   "/etc/bind/** rw," > /etc/apparmor.d/local/usr.sbin.named
+	service apparmor reload
 fi;
 
 echo "Restarting bind."
