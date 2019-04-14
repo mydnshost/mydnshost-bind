@@ -72,13 +72,12 @@ if [ "${OLDVERSION}" = "1" ]; then
 	if [ ! -e /etc/systemd/system/fakeCatalog.service ]; then
 		echo "Installing fakeCatalog.sh";
 		systemctl enable /etc/bind/fakeCatalog.service
-		systemctl daemon-reload
 	fi;
 elif [ -e /etc/systemd/system/fakeCatalog.service ]; then
 	service fakeCatalog stop
 	systemctl disable fakeCatalog
-	systemctl daemon-reload
 fi;
+systemctl daemon-reload
 
 echo "Fixing ownership";
 chown -Rf bind:bind /etc/bind
