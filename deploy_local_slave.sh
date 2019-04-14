@@ -105,6 +105,10 @@ if [ "${OLDVERSION}" = "1" ]; then
 	echo "Installing fakeCatalog.sh";
 	systemctl enable /etc/bind/fakeCatalog.service
 	systemctl daemon-reload
+else
+	if [ -e /etc/bind/fakeCatalog_monitor.sh ]; then
+		ln -s /etc/bind/fakeCatalog_monitor.sh /etc/cron.hourly/fakeCatalog_monitor.sh
+	fi;
 fi;
 
 echo "Fixing ownership";

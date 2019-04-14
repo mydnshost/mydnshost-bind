@@ -97,9 +97,17 @@ if [ "${OLDVERSION}" = "1" ]; then
 		echo "Installing fakeCatalog.sh";
 		systemctl enable /etc/bind/fakeCatalog.service
 	fi;
+
+	if [ -e /etc/cron.hourly/fakeCatalog_monitor.sh ]; then
+		rm /etc/cron.hourly/fakeCatalog_monitor.sh
+	fi
 elif [ -e /etc/systemd/system/fakeCatalog.service ]; then
 	service fakeCatalog stop
 	systemctl disable fakeCatalog
+
+	if [ -e /etc/bind/fakeCatalog_monitor.sh ]; then
+		ln -s /etc/bind/fakeCatalog_monitor.sh /etc/cron.hourly/fakeCatalog_monitor.sh
+	fi;
 fi;
 systemctl daemon-reload
 
