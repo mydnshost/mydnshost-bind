@@ -41,6 +41,29 @@ fi;
 
 echo "Upgrading up slave server."
 
+HASBIND9=`dpkg --get-selections | egrep "^bind9[[:space:]].*[[:space:]]install"`
+if [ "${HASBIND9}" != "" ]; then
+	echo "Removing bind9...";
+	service bind9 stop
+	update-rc.d bind9 disable
+	apt-get -y remove bind9 bind9utils
+fi;
+
+HASBIND=`dpkg --get-selections | egrep "^bind[[:space:]].*[[:space:]]install"`
+if [ "${HASBIND}" = "" ]; then
+	echo "Installing bind...";
+	apt-get -y install software-properties-common
+	add-apt-repository -y ppa:isc/bind
+	apt-get update
+
+	apt-get -y install bind
+	update-rc.d bind enable
+fi;
+
+echo '' > /etc/default/bind9
+echo 'RESOLVCONF=no' >> /etc/default/bind9
+echo 'OPTIONS="-u bind"' >> /etc/default/bind9
+
 cp -Rfv "${DIR}/bind/"* "/etc/bind/";
 
 rm -Rfv "/etc/bind/named.conf";
@@ -54,8 +77,9 @@ if [ "${RNDCKEY}" = "" ]; then
 
 	RNDCKEY=$(rndc-confgen -A hmac-md5 | grep -m1 secret | awk -F\" '{print $2}')
 	echo 'RNDCKEY="'"${RNDCKEY}"'"' >> "/etc/bind/server_settings.conf"
-	echo 'key "rndc-key" { algorithm hmac-md5; secret "'"${RNDCKEY}"'"; };' > /etc/bind/rndc.key.conf
 fi;
+
+echo 'key "rndc-key" { algorithm hmac-md5; secret "'"${RNDCKEY}"'"; };' > /etc/bind/rndc.key.conf
 
 TESTCONF=`mktemp`
 echo 'options { catalog-zones { }; };' >> ${TESTCONF}
@@ -89,8 +113,10 @@ if [ -e "/etc/apparmor.d/local/usr.sbin.named" ]; then
 fi;
 
 echo "Reloading bind."
-service bind9 reload
+service bind stop
+service bind start
 
 if [ "${OLDVERSION}" = "1" ]; then
-	service fakeCatalog restart
+	service fakeCatalog stop
+	service fakeCatalog start
 fi;

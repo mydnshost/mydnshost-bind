@@ -31,11 +31,7 @@ options {
 	allow-new-zones yes;
 
 	catalog-zones {
-		zone "catalog.invalid." {
-			zone-directory "cat-zones"
-			in-memory no
-			default-masters { %%MASTER%% };
-		};
+		zone "catalog.invalid." zone-directory "cat-zones" in-memory no default-masters { %%MASTER%% };
 	};
 
 };
