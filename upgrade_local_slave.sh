@@ -60,9 +60,9 @@ if [ "${HASBIND}" = "" ]; then
 	update-rc.d bind enable
 fi;
 
-echo '' > /etc/default/bind9
-echo 'RESOLVCONF=no' >> /etc/default/bind9
-echo 'OPTIONS="-u bind"' >> /etc/default/bind9
+echo '' > /etc/default/bind
+echo 'RESOLVCONF=no' >> /etc/default/bind
+echo 'OPTIONS="-u bind"' >> /etc/default/bind
 
 cp -Rfv "${DIR}/bind/"* "/etc/bind/";
 
