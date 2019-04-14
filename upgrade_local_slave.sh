@@ -69,8 +69,14 @@ if [ "${OLDVERSION}" = "1" ]; then
 	echo "Removing Catalog-Zones configuration...";
 	sed -i -e '1h;2,$H;$!d;g' -e 's/catalog-zones {[^}]*};[^}]*};[^}]*};//g' /etc/bind/named.conf
 
-	echo "Installing fakeCatalog.sh";
-	systemctl enable /etc/bind/fakeCatalog.service
+	if [ ! -e /etc/systemd/system/fakeCatalog.service ]; then
+		echo "Installing fakeCatalog.sh";
+		systemctl enable /etc/bind/fakeCatalog.service
+		systemctl daemon-reload
+	fi;
+elif [ -e /etc/systemd/system/fakeCatalog.service ]; then
+	service fakeCatalog stop
+	systemctl disable fakeCatalog
 	systemctl daemon-reload
 fi;
 
