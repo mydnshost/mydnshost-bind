@@ -89,6 +89,8 @@ if [ "${?}" -eq 1 ]; then
 fi;
 rm ${TESTCONF}
 
+CHANGECATALOG=0
+
 if [ "${OLDVERSION}" = "1" ]; then
 	echo "Removing Catalog-Zones configuration...";
 	sed -i -e '1h;2,$H;$!d;g' -e 's/catalog-zones {[^}]*};[^}]*};[^}]*};//g' /etc/bind/named.conf
@@ -101,6 +103,7 @@ if [ "${OLDVERSION}" = "1" ]; then
 	if [ -e /etc/cron.hourly/fakeCatalog_monitor.sh ]; then
 		rm /etc/cron.hourly/fakeCatalog_monitor.sh
 	fi
+	CHANGECATALOG=1
 elif [ -e /etc/systemd/system/fakeCatalog.service ]; then
 	service fakeCatalog stop
 	systemctl disable fakeCatalog
@@ -108,6 +111,7 @@ elif [ -e /etc/systemd/system/fakeCatalog.service ]; then
 	if [ -e /etc/bind/fakeCatalog_monitor.sh ]; then
 		ln -s /etc/bind/fakeCatalog_monitor.sh /etc/cron.hourly/fakeCatalog_monitor.sh
 	fi;
+	CHANGECATALOG=1
 fi;
 systemctl daemon-reload
 
@@ -122,6 +126,11 @@ fi;
 
 echo "Reloading bind."
 service bind stop
+
+if [ "${CHANGECATALOG}" == "1" ]; then
+	rm /etc/bind/_default.nzd*
+fi;
+
 service bind start
 
 if [ "${OLDVERSION}" = "1" ]; then
