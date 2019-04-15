@@ -42,5 +42,7 @@ zone "catalog.invalid" {
 	file "/bind/catalog.db";
 
 	also-notify { %%SLAVES%% };
+	allow-transfer { %%SLAVES%% };
+	allow-query { %%SLAVES%% };
 	notify explicit;
 };

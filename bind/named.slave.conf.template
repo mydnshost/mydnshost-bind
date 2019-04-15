@@ -42,4 +42,6 @@ zone "catalog.invalid" {
 	type slave;
 	file "/etc/bind/catalog.db";
 	masters { %%MASTER%% };
+	allow-transfer { %%MASTER%% };
+	allow-query { %%MASTER%% };
 };
