@@ -104,12 +104,20 @@ if [ "${OLDVERSION}" = "1" ]; then
 
 	echo "Installing fakeCatalog.sh";
 	systemctl enable /etc/bind/fakeCatalog.service
-	systemctl daemon-reload
 else
 	if [ -e /etc/bind/fakeCatalog_monitor.sh ]; then
 		ln -s /etc/bind/fakeCatalog_monitor.sh /etc/cron.hourly/fakeCatalog_monitor.sh
 	fi;
 fi;
+
+echo "Ensuring bind restarts automatically.";
+RESTART=$(grep "Restart=always" /lib/systemd/system/bind.service)
+if [ "" = "${RESTART}" ]; then
+	echo "Updating systemd file for bind...";
+	sed -i 's/\[Service\]/[Service]\nRestart=always/' /lib/systemd/system/bind.service
+fi;
+
+systemctl daemon-reload
 
 echo "Fixing ownership";
 chown -Rf bind:bind /etc/bind
