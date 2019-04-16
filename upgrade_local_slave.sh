@@ -113,6 +113,14 @@ elif [ -e /etc/systemd/system/fakeCatalog.service ]; then
 	fi;
 	CHANGECATALOG=1
 fi;
+
+echo "Ensuring bind restarts automatically.";
+RESTART=$(grep "Restart=always" /lib/systemd/system/bind.service)
+if [ "" = "${RESTART}" ]; then
+	echo "Updating systemd file for bind...";
+	sed -i 's/\[Service\]/[Service]\nRestart=always/' /lib/systemd/system/bind.service
+fi;
+
 systemctl daemon-reload
 
 echo "Fixing ownership";
