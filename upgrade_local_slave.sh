@@ -109,7 +109,7 @@ elif [ -e /etc/systemd/system/fakeCatalog.service ]; then
 	systemctl disable fakeCatalog
 
 	if [ -e /etc/bind/fakeCatalog_monitor.sh ]; then
-		ln -s /etc/bind/fakeCatalog_monitor.sh /etc/cron.hourly/fakeCatalog_monitor.sh
+		ln -s /etc/bind/fakeCatalog_monitor.sh /etc/cron.hourly/fakeCatalog_monitor
 	fi;
 	CHANGECATALOG=1
 fi;
