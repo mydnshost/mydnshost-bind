@@ -43,18 +43,20 @@ echo "Upgrading up slave server."
 
 HASBIND9=`dpkg --get-selections | egrep "^bind9[[:space:]].*[[:space:]]install"`
 if [ "${HASBIND9}" != "" ]; then
+	apt-get -y purge bind bind9
+
 	echo "Installing bind...";
 	apt-get -y install software-properties-common
 	add-apt-repository -y ppa:isc/bind
 	apt-get update
 
 	apt-get -y install bind9
-	update-rc.d bind9 enable
+	update-rc.d named enable
 fi;
 
-echo '' > /etc/default/bind
-echo 'RESOLVCONF=no' >> /etc/default/bind
-echo 'OPTIONS="-u bind"' >> /etc/default/bind
+echo '' > /etc/default/named
+echo 'RESOLVCONF=no' >> /etc/default/named
+echo 'OPTIONS="-u bind"' >> /etc/default/named
 
 cp -Rfv "${DIR}/bind/"* "/etc/bind/";
 
@@ -107,10 +109,10 @@ elif [ -e /etc/systemd/system/fakeCatalog.service ]; then
 fi;
 
 echo "Ensuring bind restarts automatically.";
-RESTART=$(grep "Restart=always" /lib/systemd/system/bind9.service)
+RESTART=$(grep "Restart=always" /lib/systemd/system/named.service)
 if [ "" = "${RESTART}" ]; then
 	echo "Updating systemd file for bind...";
-	sed -i 's/\[Service\]/[Service]\nRestart=always/' /lib/systemd/system/bind9.service
+	sed -i 's/\[Service\]/[Service]\nRestart=always/' /lib/systemd/system/named.service
 fi;
 
 systemctl daemon-reload
@@ -125,13 +127,13 @@ if [ -e "/etc/apparmor.d/local/usr.sbin.named" ]; then
 fi;
 
 echo "Reloading bind."
-service bind9 stop
+service named stop
 
 if [ "${CHANGECATALOG}" == "1" ]; then
 	rm /etc/bind/_default.nzd*
 fi;
 
-service bind9 start
+service named start
 
 if [ "${OLDVERSION}" = "1" ]; then
 	service fakeCatalog stop
