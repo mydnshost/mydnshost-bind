@@ -33,6 +33,7 @@ options {
 	session-keyfile "/run/named/session.key";
 
 	allow-new-zones yes;
+	notify no;
 
 	catalog-zones {
 		zone "catalog.invalid." zone-directory "cat-zones" in-memory no default-masters { %%MASTER%% };
