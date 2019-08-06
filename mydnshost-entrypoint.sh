@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 if [ "$1" == "" ]; then
 	if [ "${MASTER}" = "" -o "${SLAVES}" = "" ]; then
