@@ -18,6 +18,10 @@ options {
 	memstatistics-file "/etc/bind/data/named_mem_stats.txt";
 	managed-keys-directory "/etc/bind/data/";
 
+	check-names master warn;
+	check-names slave warn;
+	check-names response warn;
+
 	dnssec-enable yes;
 	key-directory "/etc/bind/keys";
 	dnssec-validation yes;
