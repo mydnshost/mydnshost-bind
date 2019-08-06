@@ -36,20 +36,13 @@ echo ""
 
 HASBIND9=`dpkg --get-selections | egrep "^bind9[[:space:]].*[[:space:]]install"`
 if [ "${HASBIND9}" != "" ]; then
-	service bind9 stop
-	update-rc.d bind9 disable
-	apt-get -y remove bind9 bind9utils
-fi;
-
-HASBIND=`dpkg --get-selections | egrep "^bind[[:space:]].*[[:space:]]install"`
-if [ "${HASBIND}" = "" ]; then
 	echo "Installing bind...";
 	apt-get -y install software-properties-common
 	add-apt-repository -y ppa:isc/bind
 	apt-get update
 
-	apt-get -y install bind
-	update-rc.d bind enable
+	apt-get -y install bind9
+	update-rc.d bind9 enable
 fi;
 
 echo '' > /etc/default/bind
@@ -111,10 +104,10 @@ else
 fi;
 
 echo "Ensuring bind restarts automatically.";
-RESTART=$(grep "Restart=always" /lib/systemd/system/bind.service)
+RESTART=$(grep "Restart=always" /lib/systemd/system/bind9.service)
 if [ "" = "${RESTART}" ]; then
 	echo "Updating systemd file for bind...";
-	sed -i 's/\[Service\]/[Service]\nRestart=always/' /lib/systemd/system/bind.service
+	sed -i 's/\[Service\]/[Service]\nRestart=always/' /lib/systemd/system/bind9.service
 fi;
 
 systemctl daemon-reload
@@ -129,8 +122,8 @@ if [ -e "/etc/apparmor.d/local/usr.sbin.named" ]; then
 fi;
 
 echo "Restarting bind."
-service bind stop
-service bind start
+service bind9 stop
+service bind9 start
 
 if [ "${OLDVERSION}" = "1" ]; then
 	service fakeCatalog stop
