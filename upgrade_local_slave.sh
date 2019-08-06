@@ -42,7 +42,7 @@ fi;
 echo "Upgrading up slave server."
 
 HASBIND9=`dpkg --get-selections | egrep "^bind9[[:space:]].*[[:space:]]install"`
-if [ "${HASBIND9}" != "" ]; then
+if [ "${HASBIND9}" = "" ]; then
 	apt-get -y purge bind bind9
 
 	echo "Installing bind...";
