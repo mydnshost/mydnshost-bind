@@ -42,25 +42,34 @@ if [ "$1" == "" ]; then
 		echo "# This file contains configuration for zones added by" >> "${ZONEFILE}"
 		echo "# the 'rndc addzone' command. DO NOT EDIT BY HAND." >> "${ZONEFILE}"
 
-		cat "${CATALOGFILE}" | egrep "IN[[:space:]]+PTR" | while read LINE; do
-			ZONE=$(echo "${LINE}" | awk -F" PTR[[:space:]]+" '{print $2}' | sed 's/.$//');
-			HASH=$(echo "${LINE}" | awk -F".zones[[:space:]]+" '{print $1}');
-			ALLOWED_TRANSFER=$(cat "${CATALOGFILE}" | egrep "allow-transfer.${HASH}.zones[[:space:]]+" | awk -F" APL " '{print $2}');
+		if [ -e "${CATALOGFILE}" ]; then
+			cat "${CATALOGFILE}" | egrep "IN[[:space:]]+PTR" | while read LINE; do
+				ZONE=$(echo "${LINE}" | awk -F" PTR[[:space:]]+" '{print $2}' | sed 's/.$//');
+				HASH=$(echo "${LINE}" | awk -F".zones[[:space:]]+" '{print $1}');
+				ALLOWED_TRANSFER=$(cat "${CATALOGFILE}" | egrep "allow-transfer.${HASH}.zones[[:space:]]+" | awk -F" APL " '{print $2}');
 
-			echo 'zone "'${ZONE}'" { type master; file "/bind/zones/'${ZONE}'.db"; auto-dnssec maintain; inline-signing yes; ' >> ${ZONEFILE}
+				echo 'zone "'${ZONE}'" { type master; file "/bind/zones/'${ZONE}'.db"; auto-dnssec maintain; inline-signing yes; ' >> ${ZONEFILE}
 
-			if [ "${ALLOWED_TRANSFER}" != "" ]; then
-				ALLOWED_TRANSFER=$(echo "${ALLOWED_TRANSFER}" | sed -re 's#[12]:([^/]+)/(32|128)#\1;#g');
-				echo 'allow-transfer { '${ALLOWED_TRANSFER}' }; ' >> ${ZONEFILE}
-			fi;
+				if [ "${ALLOWED_TRANSFER}" != "" ]; then
+					ALLOWED_TRANSFER=$(echo "${ALLOWED_TRANSFER}" | sed -re 's#[12]:([^/]+)/(32|128)#\1;#g');
+					echo 'allow-transfer { '${ALLOWED_TRANSFER}' }; ' >> ${ZONEFILE}
+				fi;
 
-			echo ' };' >> ${ZONEFILE}
-		done;
+				echo ' };' >> ${ZONEFILE}
+			done;
+		fi;
 
 		cp "/etc/bind/named.master.conf.template" "/etc/bind/named.master.conf";
 		sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.master.conf"
 		sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.master.conf"
 		sed -i 's/%%STATISTICS%%/'"${STATISTICS}"'/g' "/etc/bind/named.master.conf"
+
+		if [ ! -e "/bind/zones" ]; then
+			mkdir "/bind/zones";
+		fi;
+		if [ ! -e "/bind/keys" ]; then
+			mkdir "/bind/keys";
+		fi;
 
 		chmod a+w /bind/zones /bind/keys
 		exec named -c /etc/bind/named.master.conf -g
