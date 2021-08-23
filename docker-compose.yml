@@ -15,6 +15,7 @@ services:
     ports:
       - 53:53/tcp
       - 53:53/udp
+      - 8080:8080/tcp
     volumes:
       - ./data:/bind
       - ./data/cat-zones:/etc/bind/cat-zones
