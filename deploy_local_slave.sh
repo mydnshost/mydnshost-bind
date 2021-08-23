@@ -34,100 +34,22 @@ fi;
 echo "Setting up slave server."
 echo ""
 
-HASBIND9=`dpkg --get-selections | egrep "^bind9[[:space:]].*[[:space:]]install"`
-if [ "${HASBIND9}" != "" ]; then
-	apt-get -y purge bind bind9
-
-	echo "Installing bind...";
-	apt-get -y install software-properties-common
-	add-apt-repository -y ppa:isc/bind
-	apt-get update
-
-	apt-get -y install bind9
-	update-rc.d named enable
-fi;
-
-echo '' > /etc/default/bind9
-echo 'RESOLVCONF=no' >> /etc/default/bind9
-echo 'OPTIONS="-u bind"' >> /etc/default/bind9
-
-echo "Removing old bind config...";
-rm -Rfv "/etc/bind/"*;
-
-echo "Adding new bind config...";
-
-cp -Rfv "${DIR}/bind/"* "/etc/bind/";
-
-mkdir -p /etc/bind/dynamic
-mkdir -p /etc/bind/data
-touch /etc/bind/data/named.run
-
-rm -Rfv "/etc/bind/named.conf";
-cp "/etc/bind/named.slave.conf.template" "/etc/bind/named.conf";
-sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.conf"
-sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.conf"
-sed -i 's/%%STATISTICS%%/'"${STATISTICS}"'/g' "/etc/bind/named.conf"
-
 if [ "${RNDCKEY}" = "" ]; then
 	echo "Generating RNDC Key..."
 
 	RNDCKEY=$(rndc-confgen -A hmac-md5 | grep -m1 secret | awk -F\" '{print $2}')
 fi;
 
-echo 'MASTER="'"${MASTER}"'"' > "/etc/bind/server_settings.conf"
-echo 'SLAVES="'"${SLAVES}"'"' >> "/etc/bind/server_settings.conf"
-echo 'STATISTICS="'"${STATISTICS}"'"' >> "/etc/bind/server_settings.conf"
-echo 'RNDCKEY="'"${RNDCKEY}"'"' >> "/etc/bind/server_settings.conf"
+echo "Creating data directory."
+mkdir -p data/keys data/zones data/cat-zones
 
-echo "Creating cat-zones directory...";
-mkdir /etc/bind/cat-zones/
+touch data/catalog.db
+touch data/catalog.db
 
-echo 'key "rndc-key" { algorithm hmac-md5; secret "'"${RNDCKEY}"'"; };' > /etc/bind/rndc.key.conf
+echo 'MASTER="'"${MASTER}"'"' > "data/server_settings.conf"
+echo 'SLAVES="'"${SLAVES}"'"' >> "data/server_settings.conf"
+echo 'STATISTICS="'"${STATISTICS}"'"' >> "data/server_settings.conf"
+echo 'RNDCKEY="'"${RNDCKEY}"'"' >> "data/server_settings.conf"
 
-TESTCONF=`mktemp`
-echo 'options { catalog-zones { }; };' >> ${TESTCONF}
-named-checkconf ${TESTCONF};
-if [ "${?}" -eq 1 ]; then
-	OLDVERSION="1"
-fi;
-rm ${TESTCONF}
-
-if [ "${OLDVERSION}" = "1" ]; then
-	apt-get -y install inotify-tools
-	echo "Removing Catalog-Zones configuration...";
-	sed -i -e '1h;2,$H;$!d;g' -e 's/catalog-zones {[^}]*};[^}]*};[^}]*};//g' /etc/bind/named.conf
-
-	echo "Installing fakeCatalog.sh";
-	systemctl enable /etc/bind/fakeCatalog.service
-else
-	if [ -e /etc/bind/fakeCatalog_monitor.sh ]; then
-		ln -s /etc/bind/fakeCatalog_monitor.sh /etc/cron.hourly/fakeCatalog_monitor.sh
-	fi;
-fi;
-
-echo "Ensuring bind restarts automatically.";
-RESTART=$(grep "Restart=always" /lib/systemd/system/named.service)
-if [ "" = "${RESTART}" ]; then
-	echo "Updating systemd file for bind...";
-	sed -i 's/\[Service\]/[Service]\nRestart=always/' /lib/systemd/system/named.service
-fi;
-
-systemctl daemon-reload
-
-echo "Fixing ownership";
-chown -Rf bind:bind /etc/bind
-
-if [ -e "/etc/apparmor.d/local/usr.sbin.named" ]; then
-	echo "Fixing AppArmor";
-	echo   "/etc/bind/** rw," > /etc/apparmor.d/local/usr.sbin.named
-	service apparmor reload
-fi;
-
-echo "Restarting bind."
-service named stop
-service named start
-
-if [ "${OLDVERSION}" = "1" ]; then
-	service fakeCatalog stop
-	service fakeCatalog start
-fi;
+echo "Starting Server"
+docker-compose up -d

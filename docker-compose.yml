@@ -1,0 +1,21 @@
+---
+version: '2.3'
+
+services:
+  bind:
+    image: mydnshost/mydnshost-bind:latest
+    container_name: mydnshost_bind
+    hostname: bind
+    domainname: mydnshost.co.uk
+    environment:
+      - RUNMODE=SLAVE
+    env_file:
+      - ./data/server_settings.conf
+    restart: always
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+    volumes:
+      - ./data:/bind
+      - ./data/cat-zones:/etc/bind/cat-zones
+      - ./data/catalog.db:/etc/bind/catalog.db
