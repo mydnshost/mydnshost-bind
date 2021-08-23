@@ -36,7 +36,7 @@ options {
 	notify no;
 
 	catalog-zones {
-		zone "catalog.invalid." zone-directory "cat-zones" in-memory no default-masters { %%MASTER%% };
+		zone "catalog.invalid." zone-directory "/etc/bind/data/cat-zones" in-memory no default-masters { %%MASTER%% };
 	};
 
 };
@@ -45,7 +45,7 @@ include "/etc/bind/named.local.zones";
 
 zone "catalog.invalid" {
 	type slave;
-	file "/etc/bind/catalog.db";
+	file "/etc/bind/data/catalog.db";
 	masters { %%MASTER%% };
 	allow-transfer { %%MASTER%% };
 	allow-query { %%MASTER%% };

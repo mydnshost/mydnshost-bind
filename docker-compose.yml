@@ -18,5 +18,4 @@ services:
       - 8080:8080/tcp
     volumes:
       - ./data:/bind
-      - ./data/cat-zones:/etc/bind/cat-zones
-      - ./data/catalog.db:/etc/bind/catalog.db
+      - ./data:/etc/bind/data

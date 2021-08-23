@@ -40,6 +40,10 @@ if [ "${RNDCKEY}" = "" ]; then
 	RNDCKEY=$(rndc-confgen -A hmac-md5 | grep -m1 secret | awk -F\" '{print $2}')
 fi;
 
+echo "Disable systemd-resolved"
+sudo systemctl disable systemd-resolved
+sudo systemctl stop systemd-resolved
+
 echo "Creating data directory."
 mkdir -p data/keys data/zones data/cat-zones
 
