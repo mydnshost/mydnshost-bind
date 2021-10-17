@@ -3,7 +3,7 @@ version: '2.3'
 
 services:
   bind:
-    image: registry.shanemcc.net/mydnshost-public/mydnshost-bind:latest
+    image: registry.shanemcc.net/mydnshost-public/bind:latest
     container_name: mydnshost_bind
     hostname: bind
     domainname: mydnshost.co.uk
