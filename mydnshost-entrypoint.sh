@@ -24,6 +24,8 @@ if [ "$1" == "" ]; then
 	echo 'key "rndc-key" { algorithm hmac-md5; secret "'"${RNDCKEY}"'"; };' > /etc/bind/rndc.key.conf
 
 	echo "Starting BIND: ${RUNMODE}"
+	echo -n "Running as: "
+	id
 
 	if [ "${RUNMODE}" == "SLAVE" ]; then
 		cp "/etc/bind/named.slave.conf.template" "/etc/bind/named.slave.conf";
