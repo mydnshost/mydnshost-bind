@@ -27,6 +27,7 @@ if [ "$1" == "" ]; then
 	echo -n "Running as: "
 	id
 
+
 	if [ ! -e "/bind/meta" ]; then
 		mkdir "/bind/meta";
 	fi;
