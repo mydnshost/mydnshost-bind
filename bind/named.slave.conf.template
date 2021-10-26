@@ -1,5 +1,5 @@
 //
-// named.slave.conf
+// named.slave.conf for mydnshost
 //
 
 include "/etc/bind/rndc.controls.conf";
