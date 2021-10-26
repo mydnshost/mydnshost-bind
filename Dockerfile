@@ -1,10 +1,11 @@
-FROM alpine:latest
+# FROM alpine:latest
+FROM internetsystemsconsortium/bind9:9.16
 
 MAINTAINER Shane Mc Cormack <shanemcc@gmail.com>
 
-RUN set -x \
-    && apk add --no-cache bash bind \
-    && rm -rf /var/cache/apk/*
+# RUN set -x \
+#     && apk add --no-cache bash bind \
+#     && rm -rf /var/cache/apk/*
 
 EXPOSE 53
 EXPOSE 53/udp
