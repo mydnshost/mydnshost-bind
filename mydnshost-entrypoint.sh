@@ -27,6 +27,10 @@ if [ "$1" == "" ]; then
 	echo -n "Running as: "
 	id
 
+	if [ ! -e "/bind/meta" ]; then
+		mkdir "/bind/meta";
+	fi;
+
 	if [ "${RUNMODE}" == "SLAVE" ]; then
 		cp "/etc/bind/named.slave.conf.template" "/etc/bind/named.slave.conf";
 		sed -i 's/%%MASTER%%/'"${MASTER}"'/g' "/etc/bind/named.slave.conf"

@@ -12,11 +12,11 @@ options {
 	listen-on port 53 { any; };
 
 	directory "/etc/bind";
-	dump-file "/etc/bind/data/cache_dump.db";
-	statistics-file "/etc/bind/data/named_stats.txt";
+	dump-file "/etc/bind/data/meta/cache_dump.db";
+	statistics-file "/etc/bind/data/meta/named_stats.txt";
 	zone-statistics yes;
-	memstatistics-file "/etc/bind/data/named_mem_stats.txt";
-	managed-keys-directory "/etc/bind/data/";
+	memstatistics-file "/etc/bind/data/meta/named_mem_stats.txt";
+	managed-keys-directory "/etc/bind/data/meta/";
 
 	check-names master warn;
 	check-names slave warn;
