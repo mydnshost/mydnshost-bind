@@ -1,4 +1,5 @@
 #!/bin/bash
+# Entrypoint for MYDNSHOST
 
 set -e
 
@@ -26,7 +27,6 @@ if [ "$1" == "" ]; then
 	echo "Starting BIND: ${RUNMODE}"
 	echo -n "Running as: "
 	id
-
 
 	if [ ! -e "/bind/meta" ]; then
 		mkdir "/bind/meta";
