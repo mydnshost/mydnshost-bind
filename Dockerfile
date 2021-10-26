@@ -10,8 +10,8 @@ MAINTAINER Shane Mc Cormack <shanemcc@gmail.com>
 EXPOSE 53
 EXPOSE 53/udp
 
-COPY bind /etc/bind
 COPY mydnshost-entrypoint.sh /
+COPY bind /etc/bind
 
 RUN set -x \
     && mkdir /bind \
