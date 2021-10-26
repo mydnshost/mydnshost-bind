@@ -7,6 +7,8 @@ MAINTAINER Shane Mc Cormack <shanemcc@gmail.com>
 #     && apk add --no-cache bash bind \
 #     && rm -rf /var/cache/apk/*
 
+RUN apt-get -y install bind9-dnsutils
+
 EXPOSE 53
 EXPOSE 53/udp
 
