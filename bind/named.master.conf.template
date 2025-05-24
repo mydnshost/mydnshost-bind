@@ -24,7 +24,6 @@ options {
 
 	key-directory "/etc/bind/keys";
 	dnssec-validation yes;
-	dnssec-lookaside auto;
 
 	allow-recursion { none; };
 	recursion no;
