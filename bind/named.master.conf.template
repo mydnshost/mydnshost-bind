@@ -23,7 +23,7 @@ options {
 	check-names response warn;
 
 	key-directory "/etc/bind/keys";
-	dnssec-validation yes;
+	dnssec-validation auto;
 
 	allow-recursion { none; };
 	recursion no;
