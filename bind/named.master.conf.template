@@ -22,8 +22,10 @@ options {
 	check-names slave warn;
 	check-names response warn;
 
+	dnssec-enable yes;
 	key-directory "/etc/bind/keys";
-	dnssec-validation auto;
+	dnssec-validation yes;
+	dnssec-lookaside auto;
 
 	allow-recursion { none; };
 	recursion no;
