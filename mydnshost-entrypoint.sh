@@ -38,12 +38,16 @@ if [ "$1" == "" ]; then
 		sed -i 's/%%SLAVES%%/'"${SLAVES}"'/g' "/etc/bind/named.slave.conf"
 		sed -i 's/%%STATISTICS%%/'"${STATISTICS}"'/g' "/etc/bind/named.slave.conf"
 
-		exec named -c /etc/bind/named.slave.conf -g
+		exec named -u root -c /etc/bind/named.slave.conf -g
 	elif [ "${RUNMODE}" == "MASTER" ]; then
 
 		# Rebuild _default.nzf
 		ZONEFILE="/etc/bind/_default.nzf"
+		ZONEFILEDB="/etc/bind/_default.nzd"
 		CATALOGFILE="/bind/catalog.db"
+
+		# Remove stale NZD database first
+		rm -rf ${ZONEFILEDB}
 
 		echo "# New zone file for view: _default" > "${ZONEFILE}"
 		echo "# This file contains configuration for zones added by" >> "${ZONEFILE}"
@@ -55,11 +59,15 @@ if [ "$1" == "" ]; then
 				HASH=$(echo "${LINE}" | awk -F".zones[[:space:]]+" '{print $1}');
 				ALLOWED_TRANSFER=$(cat "${CATALOGFILE}" | egrep "allow-transfer.${HASH}.zones[[:space:]]+" | awk -F" APL " '{print $2}');
 
-				echo 'zone "'${ZONE}'" { type master; file "/bind/zones/'${ZONE}'.db"; auto-dnssec maintain; inline-signing yes; ' >> ${ZONEFILE}
+				echo 'zone "'${ZONE}'" { type master; file "/bind/zones/'${ZONE}'.db"; ' >> ${ZONEFILE}
 
 				if [ "${ALLOWED_TRANSFER}" != "" ]; then
 					ALLOWED_TRANSFER=$(echo "${ALLOWED_TRANSFER}" | sed -re 's#[12]:([^/]+)/(32|128)#\1;#g');
 					echo 'allow-transfer { '${ALLOWED_TRANSFER}' }; ' >> ${ZONEFILE}
+				fi;
+
+				if ls /bind/keys/K${ZONE}.+*.private 1>/dev/null 2>&1; then
+					echo 'dnssec-policy "mydnshost"; ' >> ${ZONEFILE}
 				fi;
 
 				echo ' };' >> ${ZONEFILE}
@@ -78,8 +86,7 @@ if [ "$1" == "" ]; then
 			mkdir "/bind/keys";
 		fi;
 
-		chmod a+w /bind/zones /bind/keys
-		exec named -c /etc/bind/named.master.conf -g
+		exec named -u root -c /etc/bind/named.master.conf -g
 	else
 		echo "Unknown RUNMODE."
 	fi;
