@@ -12,10 +12,7 @@ services:
     env_file:
       - ./data/server_settings.conf
     restart: always
-    ports:
-      - 53:53/tcp
-      - 53:53/udp
-      - 8080:8080/tcp
+    network_mode: host
     volumes:
       - ./data:/bind
       - ./data:/etc/bind/data
