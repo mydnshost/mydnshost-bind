@@ -10,7 +10,7 @@ ENV LC_ALL C.UTF-8
 RUN apt-get -qqqy update && apt-get -qqqy dist-upgrade
 RUN apt-get -qqqy install apt-utils software-properties-common dctrl-tools
 
-ARG DEB_VERSION=1:9.20.18-1+ubuntu24.04.1+deb.sury.org+1
+ARG DEB_VERSION=1:9.20.29-1~deb13u1+ubuntu24.04.1+deb.sury.org+1
 RUN add-apt-repository -y ppa:isc/bind
 RUN apt-get -qqqy update && apt-get -qqqy dist-upgrade && apt-get -qqqy install bind9=$DEB_VERSION bind9-utils=$DEB_VERSION bind9-dnsutils=$DEB_VERSION
 
